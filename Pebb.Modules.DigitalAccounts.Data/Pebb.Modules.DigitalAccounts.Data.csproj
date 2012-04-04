@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4BC64116-6A06-4C6C-A043-15941636FF16}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Pebb.Modules.DigitalAccounts.Data</RootNamespace>
+    <AssemblyName>Pebb.Modules.DigitalAccounts.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DigitalAccountsUnitOfWork.cs" />
+    <Compile Include="Mappings\CuentaMapping.cs" />
+    <Compile Include="Mappings\EstadoCuentaMapping.cs" />
+    <Compile Include="Mappings\MovimientoMapping.cs" />
+    <Compile Include="Mappings\ProductoMapping.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\CuentaRepository.cs" />
+    <Compile Include="Repositories\EstadoCuentaRepository.cs" />
+    <Compile Include="Repositories\MovimientoRepository.cs" />
+    <Compile Include="Repositories\ProductoRepository.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Templating\IRepositories.efconfig.xml" />
+    <Content Include="Templating\DbUnitOfWork.efconfig.xml" />
+    <Content Include="Templating\Repositories.efconfig.xml" />
+    <Content Include="Templating\Mappings.efconfig.xml" />
+    <Content Include="Templating\Entities.efconfig.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Templating\TemplateRepositoryInterfaces.cshtml" />
+    <None Include="Templating\TemplateRepositories.cshtml" />
+    <None Include="Templating\TemplateMappings.cshtml" />
+    <None Include="Templating\TemplateDbUnitOfWork.cshtml" />
+    <None Include="Templating\TemplateEntities.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Pebb.Domain.Core\Pebb.Domain.Core.csproj">
+      <Project>{56525ED3-35EE-4DEA-90FC-818C91FED8E0}</Project>
+      <Name>Pebb.Domain.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Pebb.Infrastructure.Core\Pebb.Infrastructure.Core.csproj">
+      <Project>{BAFF3295-A6FB-4F06-B7C0-9228E877C2E0}</Project>
+      <Name>Pebb.Infrastructure.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Pebb.Modules.DigitalAccounts.Entities\Pebb.Modules.DigitalAccounts.Entities.csproj">
+      <Project>{3B224EFA-609F-4B74-AFFF-ADD7410EB50D}</Project>
+      <Name>Pebb.Modules.DigitalAccounts.Entities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

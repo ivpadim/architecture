@@ -1,0 +1,75 @@
+﻿
+
+using System.ComponentModel.DataAnnotations;
+using System.Data.Entity.ModelConfiguration;
+using Pebb.Modules.DigitalAccounts.Entities;	
+
+namespace Pebb.Modules.DigitalAccounts.Data.Mappings
+{
+	public class CuentaMapping : EntityTypeConfiguration<Cuenta>
+	{
+		public CuentaMapping() 
+		{
+			//Primary Key
+			this.HasKey(t => t.IdCuenta);
+			this.ToTable("Cuenta", "cd");
+			this.Property(t => t.IdCuenta).HasColumnName("idCuenta").IsRequired().HasMaxLength(18).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			this.Property(t => t.IdDivisa).HasColumnName("idDivisa").IsRequired().HasMaxLength(5);
+			this.Property(t => t.IdCliente).HasColumnName("idCliente").IsRequired();
+			this.Property(t => t.IdUnidadNegocio).HasColumnName("idUnidadNegocio").IsRequired();
+			this.Property(t => t.Saldo).HasColumnName("saldo").IsRequired();
+			this.Property(t => t.SaldoProyectado).HasColumnName("saldoProyectado");
+		}
+	}
+	public class EstadoCuentaMapping : EntityTypeConfiguration<EstadoCuenta>
+	{
+		public EstadoCuentaMapping() 
+		{
+			//Primary Key
+			this.HasKey(t => t.IdEstadoCuenta);
+			this.ToTable("EstadoCuenta", "cd");
+			this.Property(t => t.IdEstadoCuenta).HasColumnName("idEstadoCuenta").IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			this.Property(t => t.IdProducto).HasColumnName("idProducto").IsRequired();
+			this.Property(t => t.IdCliente).HasColumnName("idCliente").IsRequired();
+			this.Property(t => t.IdUnidadNegocio).HasColumnName("idUnidadNegocio").IsRequired();
+			this.Property(t => t.Clave).HasColumnName("clave").IsRequired().HasMaxLength(50);
+			this.Property(t => t.FechaVigente).HasColumnName("fechaVigente").IsRequired();
+			this.Property(t => t.ArchivoPdf).HasColumnName("archivoPdf");
+			this.Property(t => t.ArchivoXml).HasColumnName("archivoXml");
+			//fkEstadoCuentaProducto
+            this.HasRequired(t => t.Producto).WithMany(t => t.EstadoCuentas).HasForeignKey (t => t.IdProducto);
+		}
+	}
+	public class MovimientoMapping : EntityTypeConfiguration<Movimiento>
+	{
+		public MovimientoMapping() 
+		{
+			//Primary Key
+			this.HasKey(t => t.IdFolio);
+			this.ToTable("Movimiento", "cd");
+			this.Property(t => t.IdFolio).HasColumnName("idFolio").IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+			this.Property(t => t.Concepto).HasColumnName("concepto").IsRequired().HasMaxLength(50);
+			this.Property(t => t.IdCuenta).HasColumnName("idCuenta").IsRequired().HasMaxLength(18);
+			this.Property(t => t.EsCargo).HasColumnName("esCargo").IsRequired();
+			this.Property(t => t.Fecha).HasColumnName("fecha").IsRequired();
+			this.Property(t => t.Importe).HasColumnName("importe").IsRequired();
+			this.Property(t => t.ImporteProyectado).HasColumnName("importeProyectado");
+			this.Property(t => t.Saldo).HasColumnName("saldo").IsRequired();
+			this.Property(t => t.SaldoProyectado).HasColumnName("saldoProyectado");
+			//fkMovimientoCuenta
+            this.HasRequired(t => t.Cuenta).WithMany(t => t.Movimientos).HasForeignKey (t => t.IdCuenta);
+		}
+	}
+	public class ProductoMapping : EntityTypeConfiguration<Producto>
+	{
+		public ProductoMapping() 
+		{
+			//Primary Key
+			this.HasKey(t => t.IdProducto);
+			this.ToTable("Producto", "cd");
+			this.Property(t => t.IdProducto).HasColumnName("idProducto").IsRequired().HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+			this.Property(t => t.Nombre).HasColumnName("nombre").HasMaxLength(100);
+		}
+	}
+
+}

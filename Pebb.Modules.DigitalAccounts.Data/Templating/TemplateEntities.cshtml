@@ -1,0 +1,191 @@
+﻿@**********************************************************
+   This code is licensed under the Microsoft Public License.
+   THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+   ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+   IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+   PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+**********************************************************@
+@using System.Data
+@using System.IO
+@using FlexibleEF.Generator
+@inherits RazorTemplate	  
+@{
+	var tables			= (IEnumerable<Table>)Model.Tables;
+	var entitiesSettings= (EntitiesSettings)Model.EntityGeneratorSetting;	
+}
+@functions 
+{
+	private static bool IsRenderNavigationProperty(ForeignKey key, EntitySettings entitySettings)
+	{
+		if(entitySettings.GenerateUniDirectionalRelationships && key.BackReference == null || key.OtherTable.Excluded)
+			return false;
+		return true;
+	}
+
+	private string RenderNavigationProperty(ForeignKey key, EntitySettings entitySettings)
+	{
+		var builder = new IndentedWriter();
+		builder.PushIndent(2);			
+		builder.Write("public virtual ");
+
+		if (key.AssociationType == AssociationType.OneToMany || key.AssociationType == AssociationType.ManyToMany)
+        {
+			builder.Write(entitySettings.OneToManyAssociationType, key.OtherTable.ClassName);
+            builder.Write(" ");
+		    builder.Write(Normalize(key.MemberName));
+        }
+		else
+        {
+			builder.Write(key.OtherTable.ClassName);
+            builder.Write(" ");            
+            builder.Write(Normalize(key.OtherTable.ClassName));            
+        }
+		
+		builder.Write(" { get; set; }");
+		return builder.ToString();
+	}
+
+	private static bool IsRenderMappingForeignKey(ForeignKey fk)
+	{
+		return fk.BackReference != null && !fk.OtherTable.Excluded;
+	}
+
+	private string RenderMappingForeignKey(ForeignKey key, EntitySettings entitySettings)
+	{
+		var writer = new IndentedWriter();		        	
+		writer.WriteLine("//{0}", key.KeyName);
+		writer.PushIndent(3);	
+		writer.Write("this");
+
+		var relationshipType = key.GetRelationshipType();
+		switch (relationshipType)
+		{
+			case RelationshipType.Required:
+				writer.Write(".HasRequired(t => t.{0})", Normalize(key.OtherTable.ClassName));
+				break;
+			case RelationshipType.Optional:
+				writer.Write(".HasOptional(t => t.{0})", Normalize(key.OtherTable.ClassName));
+				break;
+			case RelationshipType.Many:
+				writer.Write(".HasMany(t => t.{0})", Normalize(key.OtherTable.ClassName));
+				break;
+		}
+			
+		// represents a reference navigation property
+		var backReferenceRelationshipType = key.GetBackReferenceRelationshipType();
+		string with;
+		switch (backReferenceRelationshipType)
+		{
+			case RelationshipType.Required:
+				with = entitySettings.GenerateUniDirectionalRelationships 
+					   	? ".WithRequired()"
+					   	: string.Format(".WithRequired(t => t.{0})", Normalize(key.BackReference.MemberName));
+				writer.Write(with);
+				break;
+			case RelationshipType.Optional:
+				with = entitySettings.GenerateUniDirectionalRelationships 
+						? ".WithOptional()"
+						: string.Format(".WithOptional(t => t.{0})", Normalize(key.BackReference.MemberName));
+				writer.Write(with);
+				break;
+			case RelationshipType.Many:
+				with = entitySettings.GenerateUniDirectionalRelationships 
+						? ".WithMany()"			
+						: string.Format(".WithMany(t => t.{0})", Normalize(key.BackReference.MemberName));
+				writer.Write(with);
+				break;
+		}
+
+
+		// configure foreign key properties
+		if(key.ManyToMany != null)
+		{
+			writer.Write(".Map(mc => {{ mc.ToTable(\"{0}\"); mc.MapLeftKey(\"{1}\");  mc.MapRightKey(\"{2}\");}})", key.ManyToMany.Table.TableName, 
+						 key.ManyToMany.Left.ThisColumns.Select(column => column.ColumnName).Join(","), 
+						 key.ManyToMany.Rigth.ThisColumns.Select(column => column.ColumnName).Join(","));
+		}
+		else if(backReferenceRelationshipType != RelationshipType.Optional)
+		{
+			if (key.ThisColumns.Count == 1)
+				writer.Write(".HasForeignKey (t => t.{0})", Normalize(key.ThisColumns[0].MemberName));
+			else if (key.ThisColumns.Count > 1)
+				 	writer.Write(".HasForeignKey (t => new {{{0}}})", key.ThisColumns.Select(column => "t.{0}".FormatS(column.MemberName)).Join());
+		}
+		if(entitySettings.DisableCascadeDelete)	
+			writer.Write(".WillCascadeOnDelete(false)");
+		writer.Write(";");
+		return writer.ToString();
+	}
+    
+    private string Normalize(string str)
+    {
+        return CorrectPluralization(RemoveForeignTags(str));
+    }
+    
+    private string RemoveForeignTags(string str)
+    {
+        return str.Replace("_BackReference","")
+                         .Replace("fk", "");
+    }
+    
+    private string CorrectPluralization(string str)
+    {        
+        if(str.EndsWith("oes"))
+            return str.Substring(0,str.Length - 3) + "os";
+        
+        if(str.EndsWith("ns"))
+            return str.Substring(0,str.Length - 2) + "nes";
+        
+        return str;
+    }
+        
+}
+using System;
+using System.Collections.Generic;	
+
+namespace @entitiesSettings.Namespace
+{
+@{var usings = this.GetContent().Substring(4,this.GetContent().Length -4);}
+@foreach (var table in tables) 
+{   
+    var previous = this.GetContent();
+    
+	var entitySettings = @entitiesSettings.Get(table);
+	var partialKeyword = entitySettings.GeneratePartial ? " partial" : "";
+	@:public@(partialKeyword) class @table.ClassName @entitySettings.BaseClass.CaseIsEmpty("", " : " + entitySettings.BaseClass)
+	@:{
+	foreach (Column c in table.Columns.NeverNull())
+	{
+		@:public @c.Type @Normalize(c.MemberName) { get; set; }
+	}			
+	if(entitySettings.GenerateForeignKeyProperties)
+	{
+		foreach (ForeignKey key in table.ForeignKeys.NeverNull())
+		{
+			if(IsRenderNavigationProperty(key, entitySettings))
+			{
+		@:@RenderNavigationProperty(key, entitySettings)
+			}
+		}
+	}  
+
+    @:} 
+
+    var content = usings + this.GetContent().Replace(previous,"") +  "}";
+
+    if(File.Exists(entitiesSettings.Directory + "\\"  + table.ClassName + ".replace.cs"))
+    {
+        File.WriteAllText(entitiesSettings.Directory + "\\"  + table.ClassName + ".replace.cs"  ,content);
+    } 
+    else
+    {
+         if(!File.Exists(entitiesSettings.Directory + "\\"  + table.ClassName + ".cs"))
+        {
+            File.WriteAllText(entitiesSettings.Directory + "\\"  + table.ClassName + ".cs"  ,content);
+        }
+    } 
+
+    <text></text>
+}	
+	
+}

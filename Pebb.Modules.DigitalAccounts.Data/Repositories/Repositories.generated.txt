@@ -1,0 +1,42 @@
+﻿
+
+using Pebb.Infrastructure.Data;
+using Pebb.Modules.DigitalAccounts.Data;
+using Pebb.Modules.DigitalAccounts.Entities;
+
+namespace Pebb.Modules.DigitalAccounts.Data.Repositories
+{
+    public partial class CuentaRepository : RepositoryBase<Cuenta>, ICuentaRepository
+	{ 
+          public CuentaRepository(IDigitalAccountsUnitOfWork unitOfWork)
+              : base(unitOfWork)
+          {
+          }       
+    } 
+    
+    public partial class EstadoCuentaRepository : RepositoryBase<EstadoCuenta>, IEstadoCuentaRepository
+	{ 
+          public EstadoCuentaRepository(IDigitalAccountsUnitOfWork unitOfWork)
+              : base(unitOfWork)
+          {
+          }       
+    } 
+    
+    public partial class MovimientoRepository : RepositoryBase<Movimiento>, IMovimientoRepository
+	{ 
+          public MovimientoRepository(IDigitalAccountsUnitOfWork unitOfWork)
+              : base(unitOfWork)
+          {
+          }       
+    } 
+    
+    public partial class ProductoRepository : RepositoryBase<Producto>, IProductoRepository
+	{ 
+          public ProductoRepository(IDigitalAccountsUnitOfWork unitOfWork)
+              : base(unitOfWork)
+          {
+          }       
+    } 
+    
+	
+}

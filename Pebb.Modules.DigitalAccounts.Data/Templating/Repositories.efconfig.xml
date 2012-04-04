@@ -1,0 +1,95 @@
+﻿<ModelGeneration xmlns="http://FlexibleEF.com/generation/settings/1.0">
+	<!--
+	The Connection element specifies a database connection string
+	name			 - Defines the key to use to access the connection string value in the configuration file
+	configFile		 - Defines the configuration file that contains a connection string
+	connectionString - Defines the connection string value 
+	providerName	 - Provider name
+	-->
+	<Connection name="DigitalAccountsUnitOfWork" connectionString="" providerName="System.Data.SqlClient"/>
+	<!--
+	The Entities element specifies an entity generation settings
+	namespace			- Defines the namespace of the entities, required
+	fileName			- File name of generated entities, required 
+	directory			- Directory path where generated entities should be stored, optional
+	templateFile		- Path of the Razor template file, optional	
+	generateViews		- Determine if to generate views, optional, default - true
+	
+	baseClass							- Base class of the generated entities, optional	
+	generateForeignKeyProperties		- Determine if to generate foreign key properties, optional, default - true
+	generatePartial	-					- Determine if to generate entities as partial classes, optional, default - true
+	generateUniDirectionalRelationships	- Determine if to generate the uni-directional relationship properties, optional, default - false
+	convertPascalCase					- Determine if to convert tables and columns names to the pascal case, optional, default - false
+	invalidCharacterReplacement			- Replacement string of all invalid characters in table names such as '-' or spaces, optional, default - '_' 
+	pluralizeSingularize				- Determine is allows pluralize or singularize property/class names in the entities model, default - true
+	pluralizeSuffix						- Pluralize suffix string, optional
+	oneToManyAssociationType			- One to many association type of the navigation property , optional, default - ICollection&lt;{0}&gt;
+	microsoftConventionNavigationProperties - Determine if to use the microsoft naming convention for navigation properties, optional, default - false
+	-->
+	<Entities namespace="Pebb.Modules.DigitalAccounts.Data.Repositories" fileName="Repositories.generated.txt"  directory="..\Repositories" templateFile="TemplateRepositories.cshtml">
+    <Default invalidCharacterReplacement="_" pluralizeSingularize="true" oneToManyAssociationType="ICollection&lt;{0}&gt;" convertPascalCase="true" >		
+			<!-- Table transformation section.
+				 Regex table name replace transformation.
+			-->
+      <TableTransformation>
+        <RegexName>
+          <Pattern>CuentaAlias</Pattern>
+          <Replacement>CuentaAliases</Replacement>
+        </RegexName>
+      </TableTransformation>
+			<!-- 
+			<TableTransformation>				
+				<RegexName>
+					<Pattern>^(tbl_)</Pattern>
+					<Replacement>$1</Replacement>
+				</RegexName>
+				<RegexName>
+					<Pattern>(_tbl)\b</Pattern>
+					<Replacement></Replacement>
+				</RegexName>
+			</TableTransformation>
+			-->
+		</Default>
+		<!-- Table filter of generated entities by name, regex or existing edmx file
+		tableName	- Table name
+		ignoreCase	- Ignore case filter, optional, default - true
+		-->    
+			<!--
+		<Include tableName="customer" ignoreCase="1" />
+		<Include owner="product" ignoreCase="1" />
+		<IncludeRegex ignoreCase="0">
+			<Pattern>detail$</Pattern>
+		</IncludeRegex>
+		<IncludeEdmx fileName="Northwind.edmx"/>
+		-->
+    <Include tableName="Cuenta" ignoreCase="1" owner="cd"/>
+    <Include tableName="EstadoCuenta" ignoreCase="1" owner="cd"/>
+    <Include tableName="Movimiento" ignoreCase="1" owner="cd"/>
+    <Include tableName="Producto" ignoreCase="1" owner="cd"/>
+	</Entities>
+	<DbContextList>
+		<!-- Common table of generated DbContext classes -->
+		<!--
+		<Entities>
+			<Include tableName="" ignoreCase="1" />
+			<Include owner="product" ignoreCase="1" />
+			<Include><Regex ignoreCase="1"></Regex></Include>
+			<IncludeEdmx fileName="Northwind.edmx"/>
+		</Entities>
+		-->
+		<!--
+		The DbContext element specifies a DbContext class generation settings
+			className				- Defines the generated class name derived from DbContext, required
+			baseClassName			- Base class of the generated DbContext class, optional	
+			namespace				- Defines the namespace of the DbContext class, required
+			entitiesNamespace		- Defines the namespace of the entities classes, optional
+			fileName				- File name of generated DbContext class, required 
+			directory				- Directory path where generated DbContext class should be stored, optional
+			templateFile			- Path of the Razor template file, optional
+			generateConstructorWithConnectionName - Determine if to initialize in the default constructor a connection name that specified in the app.config file
+			generatePartial			- Determine if to generate entities as partial classes, optional, default - true
+			getterOnlyProperties	- Determine if to generate read only properties, that used with Set function
+			useDbSetInterface		- Determine if to generate IDbSet interface instead DbSet class
+		-->    
+	</DbContextList>
+</ModelGeneration>

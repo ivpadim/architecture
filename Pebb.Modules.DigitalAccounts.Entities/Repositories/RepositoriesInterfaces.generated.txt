@@ -1,0 +1,16 @@
+﻿
+
+using Pebb.Domain.Core;
+
+namespace Pebb.Modules.DigitalAccounts.Entities
+{
+	public interface ICuentaRepository : IRepository<Cuenta> {}
+    
+	public interface IEstadoCuentaRepository : IRepository<EstadoCuenta> {}
+    
+	public interface IMovimientoRepository : IRepository<Movimiento> {}
+    
+	public interface IProductoRepository : IRepository<Producto> {}
+    
+	
+}

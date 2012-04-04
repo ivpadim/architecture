@@ -1,0 +1,56 @@
+﻿@**********************************************************
+   This code is licensed under the Microsoft Public License.
+   THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+   ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+   IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+   PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+**********************************************************@
+@using System.Data
+@using System.IO
+@using FlexibleEF.Generator
+@inherits RazorTemplate	  
+@{
+	var tables			= (IEnumerable<Table>)Model.Tables;
+	var entitiesSettings= (EntitiesSettings)Model.EntityGeneratorSetting;	
+}
+
+using Pebb.Infrastructure.Data;
+using Pebb.Modules.DigitalAccounts.Data;
+using Pebb.Modules.DigitalAccounts.Entities;
+
+namespace @entitiesSettings.Namespace
+{
+@{var usings = this.GetContent().Substring(4,this.GetContent().Length -4);}
+@foreach (var table in tables) 
+{   
+    var previous = this.GetContent();
+    
+	var entitySettings = @entitiesSettings.Get(table);
+
+    @:public partial class @(table.ClassName)Repository : RepositoryBase<@(table.ClassName)>, I@(table.ClassName)Repository
+	@:{ 
+          @:public @(table.ClassName)Repository(IDigitalAccountsUnitOfWork unitOfWork)
+              <text>:</text> @:base(unitOfWork)
+          @:{
+          @:}       
+    @:} 
+
+
+    var content = usings + this.GetContent().Replace(previous,"") +  "}";
+    //File.WriteAllText(entitiesSettings.Directory + "\\"  + table.ClassName + "Repository.cs"  ,content);
+     if(File.Exists(entitiesSettings.Directory + "\\"  + table.ClassName + "Repository.replace.cs"))
+    {
+        File.WriteAllText(entitiesSettings.Directory + "\\"  + table.ClassName + "Repository.replace.cs"  ,content);
+    }
+    else
+    { 
+     if(!File.Exists(entitiesSettings.Directory + "\\"  + table.ClassName + "Repository.cs"))
+    {
+        File.WriteAllText(entitiesSettings.Directory + "\\"  + table.ClassName + "Repository.cs"  ,content);
+    }
+    } 
+
+    <text></text>
+}	
+	
+}
