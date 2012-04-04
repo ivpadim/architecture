@@ -22,6 +22,7 @@ namespace Pebb.Modules.DigitalAccounts.Application
 
         public IEnumerable<Producto> GetProductos()
         {
+            //this code is intentional...
             return _productoRepository.AsQueryable();
         }
     }
