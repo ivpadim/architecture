@@ -1,5 +1,5 @@
 This solution sample is incomplete
-My intentions is to provide a very basic project using some DDD concepts with EF Code First and WebApi
+My intention is to provide a very basic sample using some DDD concepts with EF Code First and WebApi
 
 1.- Autogenerate the database changing de web.config in Pebb.Services.Host
 2.- Add the connections strings to generate the model in Pebb.Modules.DigitalAccounts.Data on the folder Templating
